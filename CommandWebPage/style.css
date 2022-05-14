@@ -1,0 +1,14 @@
+
+                table {
+                    border-collapse: collapse;
+                    width: 100%;
+                    font-size: 19px;
+                    font-weight: 500;
+                }
+                th, td {
+                    text-align: left;
+                    padding: 8px;
+                }
+                td {color: #8fe07b;}
+                tr:nth-child(even){background-color: #f2f2f2}
+                
