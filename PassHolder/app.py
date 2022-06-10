@@ -6,32 +6,38 @@ from PyQt5 import uic
 
 import mysql.connector
 
+
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
 print(BASE_DIR)
 
 db = mysql.connector.connect( host="localhost", user="root", passwd="root", database="passwords")
 cursor = db.cursor()
-
+log_user = None
 
 class PassHolder(QMainWindow):#
+    
+
     def __init__(self):
         super().__init__()
         uic.loadUi(f'{BASE_DIR}\\UIs\\loginscreenUI.ui', self)
         print(f'{BASE_DIR}\\UIs\\showscreenUI.ui')
         self.setWindowTitle('PassHolder')
+        
+
         self.password_input.setEchoMode(2)
         self.login_button.clicked.connect(self.login)
         self.signup_button.clicked.connect(self.register)
 
 
     def login(self):
-        global username
-        username = self.username_input.text()
+            
+        log_username = self.username_input.text()
+        log_user = log_username
         password = self.password_input.text()
-        if username == '' or password == '':
+        if log_username == '' or password == '':
             self.error_message.setText('Please fill in all fields')
         else:
-            cursor.execute("SELECT * FROM users WHERE username = '{}' AND password = '{}'".format(username, password))
+            cursor.execute("SELECT * FROM users WHERE username = '{}' AND password = '{}'".format(log_username, password))
             if cursor.fetchone() is None:
                 self.error_message.setText('Username or password is incorrect')
             else:
@@ -83,6 +89,7 @@ class MainScreen(QDialog):
         
         self.welcomeLabel.setText('Welcome back')
 
+        log_user = 'root'
 
         self.showpassword_button.clicked.connect(self.show)
         self.addpassword_button.clicked.connect(self.add)
@@ -115,7 +122,7 @@ class AddPasswordScreen(QDialog):
         if username == '' or password == '' or website == '':
             self.error_message.setText('Please fill in all fields')
         else:
-            cursor.execute(f"INSERT INTO passwords (Username, Password, Website) VALUES ('{username}', '{password}', '{website}')")
+            cursor.execute(f"INSERT INTO passwords (Username, Password, Website,reg_user) VALUES ('{username}', '{password}', '{website}', '{log_user}')")
             db.commit()
 
             self.username_input.setText(''),self.password_input.setText(''),self.website_input.setText('')
@@ -135,8 +142,9 @@ class ShowPasswordScreen(QDialog):
         self.setWindowTitle('PassHolder')
         
         self.back_button.clicked.connect(self.back)
-#       
-        passwords = cursor.execute("SELECT * FROM passwords")
+    
+        passwords = cursor.execute("SELECT Username,Password,Website FROM passwords WHERE reg_user = '{}'".format(log_user))
+        print("SELECT Username,Password,Website FROM passwords WHERE reg_user = '{}'".format(log_user))
         passwords = cursor.fetchall()
         self.tableWidget.setRowCount(len(passwords))
         self.tableWidget.setColumnCount(3)
