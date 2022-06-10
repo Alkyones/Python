@@ -1,4 +1,4 @@
-import sys
+import sys,os
 from PyQt5.QtWidgets import QApplication, QMainWindow, QStackedWidget, QTableWidgetItem, QDialog
 from PyQt5 import uic
 
@@ -6,7 +6,8 @@ from PyQt5 import uic
 
 import mysql.connector
 
-
+BASE_DIR = os.path.dirname(os.path.abspath(__file__))
+print(BASE_DIR)
 
 db = mysql.connector.connect( host="localhost", user="root", passwd="root", database="passwords")
 cursor = db.cursor()
@@ -15,9 +16,10 @@ cursor = db.cursor()
 class PassHolder(QMainWindow):#
     def __init__(self):
         super().__init__()
-        uic.loadUi('C:/Users/lifeo/Desktop/UIs/loginscreenUI.ui', self)
+        uic.loadUi(f'{BASE_DIR}\\UIs\\loginscreenUI.ui', self)
+        print(f'{BASE_DIR}\\UIs\\showscreenUI.ui')
         self.setWindowTitle('PassHolder')
-
+        self.password_input.setEchoMode(2)
         self.login_button.clicked.connect(self.login)
         self.signup_button.clicked.connect(self.register)
 
@@ -47,8 +49,10 @@ class PassHolder(QMainWindow):#
 class RegisterScreen(QDialog):
     def __init__(self):
         super().__init__()
-        uic.loadUi('C:/Users/lifeo/Desktop/UIs/registerscreenUI.ui', self)
+        uic.loadUi(f'{BASE_DIR}\\UIs\\registerscreenUI.ui', self)
         self.setWindowTitle('PassHolder')
+
+        self.password_input.setEchoMode(2)
         
         self.register_button.clicked.connect(self.register)
         self.back_button.clicked.connect(self.back)
@@ -74,7 +78,7 @@ class RegisterScreen(QDialog):
 class MainScreen(QDialog):
     def __init__(self):
         super().__init__()
-        uic.loadUi('C:/Users/lifeo/Desktop/UIs/mainscreenUI.ui', self)
+        uic.loadUi(f'{BASE_DIR}\\UIs\\mainscreenUI.ui', self)
         self.setWindowTitle('PassHolder')
         
         self.welcomeLabel.setText('Welcome back')
@@ -98,7 +102,7 @@ class MainScreen(QDialog):
 class AddPasswordScreen(QDialog):
     def __init__(self):
         super().__init__()
-        uic.loadUi('C:/Users/lifeo/Desktop/UIs/addscreenUI.ui', self)
+        uic.loadUi(f'{BASE_DIR}\\UIs\\addscreenUI.ui', self)
         self.setWindowTitle('PassHolder')
         
         self.add_button.clicked.connect(self.add)
@@ -127,7 +131,7 @@ class AddPasswordScreen(QDialog):
 class ShowPasswordScreen(QDialog):
     def __init__(self):
         super().__init__()
-        uic.loadUi('C:/Users/lifeo/Desktop/UIs/showscreenUI.ui', self)
+        uic.loadUi(f'{BASE_DIR}\\UIs\\showscreenUI.ui', self)
         self.setWindowTitle('PassHolder')
         
         self.back_button.clicked.connect(self.back)
