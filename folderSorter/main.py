@@ -1,4 +1,5 @@
 from datetime import datetime
+from itertools import count
 import time
 import sched
 import os,sys
@@ -11,42 +12,59 @@ scheduler = sched.scheduler(time.time, time.sleep)
 def FileCounter(folderName):
     date_today = datetime.now().strftime('%Y-%m-%d')
     hour_today = datetime.now().strftime('%H:%M')
-    _str = f"{date_today}\t{hour_today}\n{folderName}\t"
+    _str = f"{date_today}\t{hour_today}\n{folderName}\thas "
+
+    content = {
+    "file":
+    {
+        "count": 0,
+        "extension_mono": "file",
+        "extension_many": "files",
+        "exec": os.path.isfile
+    },
+    "folder":
+    {
+        "count": 0,
+        "extension_mono": "folder",
+        "extension_many": "folders",
+        "exec": os.path.isdir
+    },
+    "other":
+    {
+        "count": 0,
+        "extension_mono": "other",
+        "extension_many": "others",
+    }
+    }
+
 
     ## check files
-    counter_file,counter_dir, etc = 0,0,0
+
     for file in os.listdir(folderPath):
-        if os.path.isfile(os.path.join(folderPath,file)):
-            counter_file += 1
-        elif os.path.isdir(os.path.join(folderPath,file)):
-            counter_dir += 1
+        if content["file"]["exec"](os.path.join(folderPath,file)):
+            content["file"]["count"] += 1
+        elif content["folder"]["exec"](os.path.join(folderPath,file)):
+            content["folder"]["count"] += 1
+            
         else:
-            etc += 1
+            content["etc"]["count"] += 1
+            
     
     #format str
-    if counter_file > 0:
-        _str += f"has {counter_file} file(s)\t"
-    
-    if counter_dir > 0:
-        _str += f"has {counter_dir} folder(s)\t"
+    for type_f in content:
+        if content[type_f]["count"]:
+            count = content[type_f]["count"]
+            ext = content[type_f]["extension_mono"] if count == 1 else content[type_f]["extension_many"]
 
-    if etc > 0:
-        _str += f"has {etc} unknown type file(s)\t"
+            _str += f"{count} {ext}\t"        
 
 
     print(_str)
-
-
-    
-
-
-
-
-    print (_str)
     scheduler.enter(3600, 1, FileCounter, kwargs={'folderName': folderPath})
 
 
-scheduler.enter(1, 1, FileCounter, kwargs={'folderName': folderPath}) 
+scheduler.enter(1, 1, FileCounter, kwargs={'folderName': folderPath})
+
 scheduler.run()
 
 
