@@ -52,13 +52,16 @@ def regexCalcAlgo(syn):
     return res
 
 
-t0 = regexCalcAlgo('')
+
+
+
+def regexCalc(syn):
+    pass
+
 t1 = regexCalcAlgo("1 + ")
+t0 = regexCalcAlgo('')
 t2 = regexCalcAlgo("1 + 12 - 12 + 1 + 2 + 2")
-
 print(t0,t1,t2)
-
-
 
 
 
