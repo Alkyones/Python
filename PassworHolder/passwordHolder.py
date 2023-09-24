@@ -12,8 +12,8 @@ def discounnectDb(db):
         return False
 
 def connectDb() :
-    dbUrl = 'mongodb+srv://lifeonshort:29CpgC2Qr563KIwQ@pythonprojects.ws0xsk7.mongodb.net/'
-    databaseName = "PasswordHolder"
+    dbUrl = ''
+    databaseName = ""
     db = MongoClient(dbUrl)
     database = db.PasswordHolder
     print("Connected to Mongo")
