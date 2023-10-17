@@ -1,6 +1,0 @@
-        id  age     sex      region   income married  children  car save_act current_act mortgage  pep
-0  ID12101   48  FEMALE  INNER_CITY  17546.0      NO         1   NO       NO          NO       NO  YES
-1  ID12102   40    MALE        TOWN  30085.1     YES         3  YES       NO         YES      YES   NO
-2  ID12103   51  FEMALE  INNER_CITY  16575.4     YES         0  YES      YES         YES       NO   NO
-3  ID12104   23  FEMALE        TOWN  20375.4     YES         3   NO       NO         YES       NO   NO
-4  ID12105   57  FEMALE       RURAL  50576.3     YES         0   NO      YES          NO       NO   NO
