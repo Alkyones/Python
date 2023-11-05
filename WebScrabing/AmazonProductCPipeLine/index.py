@@ -15,8 +15,28 @@ def getLinksFromList(data):
     for el in data:
         link = el.find('a')
         if link: links.append(link['href'])
-    print(links)
-    
+    return links or False
+
+def getScrapedDataFromLinks(links, url_base):
+    scrapedTopList = {}
+    for link in links:
+        cleanedItems = []
+        
+        driver.get(url_base + link)
+        driver.execute_script("window.scrollTo(0, document.body.scrollHeight);")
+        
+        page_source = driver.page_source
+        soup = BeautifulSoup(page_source, 'lxml')
+        
+        items = soup.find_all('div', {'id': 'gridItemRoot'})
+        for item in items:
+            spans = item.find_all('span')
+            rank = spans[0].text
+            description = spans[1].text
+            print(rank,description)
+        time.sleep(4)
+        print('Getting the data')
+
 def get_credentials():
     try:
         with open(f'{credentialFile}/amazonPipeline.json', 'r') as file:
@@ -34,7 +54,9 @@ if credentials is None: sys.exit("No credentials found hence program is closed."
 #DB connection
 DB = Database(credentials)
 
-url= "https://www.amazon.com.tr/gp/bestsellers?ref_=nav_cs_bestsellers"
+url_base = "https://www.amazon.com.tr"
+url= f"{url_base}/gp/bestsellers?ref_=nav_cs_bestsellers"
+
 
 
 
@@ -47,8 +69,13 @@ page_source = driver.page_source
 soup = BeautifulSoup(page_source, 'lxml')
 
 containerData = soup.find_all('div', {'class': 'a-size-base a-inline-block'})
-getLinksFromList(containerData)
+links = getLinksFromList(containerData)
 
+if not links:
+    print( "No links found")
+    sys.exit()
+
+scrapedData = getScrapedDataFromLinks(links,url_base)
 
 
 
