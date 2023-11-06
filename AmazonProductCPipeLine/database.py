@@ -1,5 +1,5 @@
 from pymongo import MongoClient
-
+import datetime
 class Database:
     def __init__(self, credentials):
         self.connection = self.connectDb(credentials)
@@ -17,6 +17,8 @@ class Database:
     def insertDoc(self, collection, doc):
         try:
             col = self.connection[collection]
+            date = datetime.datetime.now(tz=datetime.timezone.utc)
+            doc["createdAt"] = date
             col.insert_one(doc)
             return True
         except Exception as e:
