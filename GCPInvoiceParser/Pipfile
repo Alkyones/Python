@@ -1,0 +1,17 @@
+[[source]]
+url = "https://pypi.org/simple"
+verify_ssl = true
+name = "pypi"
+
+[packages]
+google-cloud-core = "==1.6.0"
+google-cloud-documentai = "*"
+google-cloud-storage = "==1.36.2"
+simplejson = "*"
+pandas = "*"
+install = "*"
+
+[dev-packages]
+
+[requires]
+python_version = "3.11"
