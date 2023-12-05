@@ -1,22 +1,81 @@
 from google.cloud import documentai
 from google.api_core.client_options import ClientOptions
+from google.api_core.client_options import ClientOptions
+from google.api_core.exceptions import FailedPrecondition
+
+
+import os
+import pandas as pd
+import inspect
 
 from typing import Optional, Sequence
 from functions import *
 
 class InvoiceParser:
     def __init__(
-        self, project_id, document_type, document_path, mime_type,version,processor_id,location="eu"
+        self, project_id, document_type, document_path, mime_type,version,processor_id,processor_type,processor_name,location="eu"
     ):
+        self.client = documentai.DocumentProcessorServiceClient(client_options={'api_endpoint': f'{location}-documentai.googleapis.com'})
         self.project_id = project_id
         self.document_type = document_type
         self.document_path = document_path
         self.mime_type = mime_type
-        self.client = documentai.DocumentProcessorServiceClient()
         self.location = location
         self.version = version
         self.processor_id = processor_id
+        self.processor_type = processor_type
+        self.processor_name = processor_name
 
+    def __str__(self):
+        return str(self.__class__) + ": " + str(self.__dict__)
+
+    #Save 
+    def saveDocumentOCR(document) -> None:
+        pass
+    def saveDocumentInvoice(self,dataFrame) -> bool:
+        print(dataFrame)
+        return True
+    
+    #Update
+    def editProcessedDocument(document) -> None:
+        pass
+    
+    #Processor methods
+    def enableProcessor(self) -> None:
+        opts = ClientOptions(api_endpoint=f"{self.location}-documentai.googleapis.com")
+        client = documentai.DocumentProcessorServiceClient(client_options=opts)
+
+        processor_name = client.processor_path(self.project_id, self.location, self.processor_id)
+        request = documentai.EnableProcessorRequest(name=processor_name)
+
+        try:
+            operation = client.enable_processor(request=request)
+
+           
+            print(f"{style.GREEN}{operation.operation.name} - Enabling {style.RESET}")
+            operation.result()
+        # Cannot disable a processor that is already disabled
+        except FailedPrecondition as e:
+            print(style.RED  + e.message + style.RESET) 
+    
+    def disableProcessor(self) -> None:
+        opts = ClientOptions(api_endpoint=f"{self.location}-documentai.googleapis.com")
+        client = documentai.DocumentProcessorServiceClient(client_options=opts)
+
+        processor_name = client.processor_path(self.project_id, self.location, self.processor_id)
+        request = documentai.DisableProcessorRequest(name=processor_name)
+
+        try:
+            operation = client.disable_processor(request=request)
+
+           
+            print(f"{style.GREEN}{operation.operation.name} - Disabling {style.RESET}")
+            operation.result()
+        # Cannot disable a processor that is already disabled
+        except FailedPrecondition as e:
+            print(style.RED  + e.message + style.RESET) 
+
+    
     def listProcessorDetails(self) -> None:
         opts = ClientOptions(api_endpoint=f"{self.location}-documentai.googleapis.com")
         client = documentai.DocumentProcessorServiceClient(client_options=opts)
@@ -25,28 +84,22 @@ class InvoiceParser:
         processor_list = client.list_processors(parent=parent)
 
         for processor in processor_list:
-            print(f"Processor Name: {processor.name}")
+            print(f"{style.ORANGE}Processor Name: {processor.name}")
             print(f"Processor Display Name: {processor.display_name}")
             print(f"Processor Type: {processor.type_}")
-            print("")
+            print(f"{style.RESET}")
 
+    def getProcessorSchema(self):
+        client = self.client
 
-    def processInvoice_v1(self):
-        with open(self.document_path, "rb") as pdf_file:
-            content = pdf_file.read()
-        document = documentai.types.Document(content=content)
+        processor_name = f"projects/{self.project_id}/locations/eu/processors/{self.processor_id}"
+        processor = client.get_processor(name=processor_name)
 
-        request = documentai.types.ProcessRequest(
-            name=f"projects/{self.project_id}/locations/us/processors/{self.document_type}",
-            raw_document=documentai.types.RawDocument(content=content),
-        )
-        result = self.client.process_document(request=request)
-        extracted_data = {}
-        for entity in result.document.entities:
-            extracted_data[entity.type_] = entity.mention_text
-        return extracted_data
+        schema = processor
+        print(f"Processor Schema: {schema}")
+        return schema
 
-    
+    #Processors
     def processDocumentOCR_v1(self) -> None:
         process_options = documentai.ProcessOptions(
             ocr_config=documentai.OcrConfig(
@@ -61,8 +114,11 @@ class InvoiceParser:
                 ),
             )
         )
-    
-        document = process_document(
+        if(self.processor_type == "INVOICE_PARSER"):
+            print(inspect.stack()[-1].code_context[0].strip(), 'is not able to process an INVOICE_PARSER processor.')
+            return False
+        
+        document = processDocument(
             self.project_id,
             self.location,
             self.processor_id,
@@ -78,27 +134,54 @@ class InvoiceParser:
 
         for page in document.pages:
             print(f"Page {page.page_number}:")
-            print_page_dimensions(page.dimension)
-            print_detected_langauges(page.detected_languages)
+            printPageDimensions(page.dimension)
+            printDetectedLanguages(page.detected_languages)
 
-            print_blocks(page.blocks, text)
-            print_paragraphs(page.paragraphs, text)
-            print_lines(page.lines, text)
-            print_tokens(page.tokens, text)
+            printBlocks(page.blocks, text)
+            printParagraphs(page.paragraphs, text)
+            printLines(page.lines, text)
+            printTokens(page.tokens, text)
 
             if page.symbols:
-                print_symbols(page.symbols, text)
+                printSymbols(page.symbols, text)
 
             if page.image_quality_scores:
-                print_image_quality_scores(page.image_quality_scores)
+                printImageQualityScores(page.image_quality_scores)
 
             if page.visual_elements:
-                print_visual_elements(page.visual_elements, text)
+                printVisualElements(page.visual_elements, text)
                 
-    def saveDocumentOCR(document) -> None:
-        pass
-    def saveDocumentInvoice(invoice) -> None:
-        pass
+    def processInvoiceParser_v1(self) -> None:
+       
+        client_options = {"api_endpoint": f"{self.location}-documentai.googleapis.com"}
+        client = documentai.DocumentProcessorServiceClient(client_options=client_options)
+        name = f"projects/{self.project_id}/locations/{self.location}/processors/{self.processor_id}"
+
+        with open(self.document_path, "rb") as invoice:
+            invoice_content = invoice.read()
+
+       
+        document = {"content": invoice_content, "mime_type": "application/pdf"}
+        request = {"name": name, "raw_document": document}
+
+       
+        result = client.process_document(request=request)
+        document = result.document
+        entities = document.entities
+        print(f"{style.BLUE}Document reading complete.{style.RESET}\n\n")
+
     
-    def editProcessedDocument(document) -> None:
-        pass
+        types = []
+        values = []
+        confidence = []
+        
+        for entity in entities:
+            types.append(entity.type_)
+            values.append(entity.mention_text)
+            confidence.append(round(entity.confidence,4))
+            
+    
+        df = pd.DataFrame({'Type': types, 'Value': values, 'Confidence': confidence})
+        # print(document) - for vertex improvement
+        humanProcess = humanProcessInfo(result)
+        return df

@@ -19,17 +19,32 @@ if __name__ == "__main__":
         credentials["MIME_TYPE"],
         credentials["PROCESSOR_VERSION"],
         credentials["PROCESSOR_ID"],
+        credentials["PROCESSOR_TYPE"],
+        credentials["PROCESSOR_NAME"],
         credentials["LOCATION"]
         )
     
-    #TODO V1 needs more debugging
-    # extracted_data = InvoiceParserInit.processInvoice_v1()
-    # print("Extracted Data:")
-    # for key, value in extracted_data.items():
-    #     print(f"{key}: {value}")
+ 
     
     
     #* COMPLETED
     listProcessors = InvoiceParserInit.listProcessorDetails()
+    
+    #* COMPLETED - Enable Processor
+    # enableProcessor = InvoiceParserInit.enableProcessor()
+    #* COMPLETED - Disable Processor
+    # disableProcessor = InvoiceParserInit.disableProcessor()
+    
+    #* COMPLETED - Active processor schema
+    # schemaProcessor = InvoiceParserInit.getProcessorSchema()
 
-    readInvoice = InvoiceParserInit.processDocumentOCR_v1()
+    #* COMPLETED
+    # readDocument = InvoiceParserInit.processDocumentOCR_v1()
+    
+    #* COMPLETED
+    # readInvoice = InvoiceParserInit.processInvoiceParser_v1()
+    #TODO CREATE SAVE FUNCTION FOR RECEIVED DOCUMENT
+    # saveInvoice = InvoiceParserInit.saveDocumentInvoice(readInvoice)
+    
+    #TODO IMPLEMENT PIPELINE TO COMPANY TO CREATE OFFER AND INVOICE
+    #pipeline
