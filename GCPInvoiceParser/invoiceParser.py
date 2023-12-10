@@ -1,6 +1,5 @@
 from google.cloud import documentai
 from google.api_core.client_options import ClientOptions
-from google.api_core.client_options import ClientOptions
 from google.api_core.exceptions import FailedPrecondition
 
 
@@ -32,9 +31,8 @@ class InvoiceParser:
     #Save 
     def saveDocumentOCR(document) -> None:
         pass
-    def saveDocumentInvoice(self,dataFrame) -> bool:
-        print(dataFrame)
-        return True
+    def saveDocumentInvoice(self,dataFrame) -> int:
+        return dataFrame
     
     #Update
     def editProcessedDocument(document) -> None:
@@ -182,6 +180,6 @@ class InvoiceParser:
             
     
         df = pd.DataFrame({'Type': types, 'Value': values, 'Confidence': confidence})
-        # print(document) - for vertex improvement
+        print(document)
         humanProcess = humanProcessInfo(result)
         return df

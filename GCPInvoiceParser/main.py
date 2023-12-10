@@ -3,6 +3,7 @@ from invoiceParser import InvoiceParser
 import os
 import json
 
+
 if __name__ == "__main__":
 
     os.environ['GOOGLE_APPLICATION_CREDENTIALS'] = './credentials.json'
@@ -41,10 +42,13 @@ if __name__ == "__main__":
     #* COMPLETED
     # readDocument = InvoiceParserInit.processDocumentOCR_v1()
     
+    #TODO CREATE TRAIN FUNCTION FOR RECEIVED DOCUMENT
+    
     #* COMPLETED
-    # readInvoice = InvoiceParserInit.processInvoiceParser_v1()
-    #TODO CREATE SAVE FUNCTION FOR RECEIVED DOCUMENT
-    # saveInvoice = InvoiceParserInit.saveDocumentInvoice(readInvoice)
+    readInvoice = InvoiceParserInit.processInvoiceParser_v1()
+    # #TODO CREATE SAVE FUNCTION FOR RECEIVED DOCUMENT
+    saveInvoice = InvoiceParserInit.saveDocumentInvoice(readInvoice)
+    
     
     #TODO IMPLEMENT PIPELINE TO COMPANY TO CREATE OFFER AND INVOICE
     #pipeline
