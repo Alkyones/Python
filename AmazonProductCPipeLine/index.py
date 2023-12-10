@@ -35,26 +35,27 @@ def getScrapedDataFromLinks(links, url_base):
         soup = BeautifulSoup(page_source, "lxml")
 
         selectedCategory = soup.find("a", {"class": "nav-b"})
-        title = selectedCategory["aria-label"]
+        print(selectedCategory)
+        if selectedCategory :
+            title = selectedCategory["aria-label"]
+            items = soup.find_all("div", {"id": "gridItemRoot"})
+            for item in items:
+                spans = item.find_all("span")
+                rank = spans[0].text
+                description = spans[1].text
+                price = findPrice(item)
+                
+                link = item.find("a", {"class": "a-link-normal"})
+                link = url_base + link["href"]
 
-        items = soup.find_all("div", {"id": "gridItemRoot"})
-        for item in items:
-            spans = item.find_all("span")
-            rank = spans[0].text
-            description = spans[1].text
-            price = findPrice(item)
-            
-            link = item.find("a", {"class": "a-link-normal"})
-            link = url_base + link["href"]
-
-            cleanedData = {
-                'rank': rank,
-                'product': description,
-                'price': price,
-                'link': link
-            }
-            cleanedItems.append(cleanedData)
-        scrapedTopList[title] = cleanedItems
+                cleanedData = {
+                    'rank': rank,
+                    'product': description,
+                    'price': price,
+                    'link': link
+                }
+                cleanedItems.append(cleanedData)
+            scrapedTopList[title] = cleanedItems
         time.sleep(3)
         print("Getting the data")
     DB.insertDoc(credentials['collectionName'], scrapedTopList)
