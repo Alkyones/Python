@@ -33,11 +33,12 @@ def getScrapedDataFromLinks(links, url_base):
 
         page_source = driver.page_source
         soup = BeautifulSoup(page_source, "lxml")
-
+        
         selectedCategory = soup.find("a", {"class": "nav-b"})
-        print(selectedCategory)
+        # selectedCategoryBackup = soup.find("a", {"class": ""})
         if selectedCategory :
             title = selectedCategory["aria-label"]
+            print("title: " + title, " url:", url_base + link)
             items = soup.find_all("div", {"id": "gridItemRoot"})
             for item in items:
                 spans = item.find_all("span")
@@ -47,7 +48,7 @@ def getScrapedDataFromLinks(links, url_base):
                 
                 link = item.find("a", {"class": "a-link-normal"})
                 link = url_base + link["href"]
-
+                
                 cleanedData = {
                     'rank': rank,
                     'product': description,
@@ -56,9 +57,13 @@ def getScrapedDataFromLinks(links, url_base):
                 }
                 cleanedItems.append(cleanedData)
             scrapedTopList[title] = cleanedItems
-        time.sleep(3)
+            time.sleep(4)
+        else:
+            print(selectedCategory)
+            print("title is not found for link: ", url_base + link )
+                
         print("Getting the data")
-    DB.insertDoc(credentials['collectionName'], scrapedTopList)
+    # DB.insertDoc(credentials['collectionName'], scrapedTopList)
     return True
 
 
@@ -84,9 +89,8 @@ if credentials is None:
 # DB connection
 DB = Database(credentials)
 
-url_base = "https://www.amazon.com.tr"
-url = f"{url_base}/gp/bestsellers?ref_=nav_cs_bestsellers"
-
+url_base = "https://www.amazon.com"
+url = f"{url_base}/Best-Sellers/zgbs"
 
 options = webdriver.ChromeOptions()
 options.add_argument("--headless")
