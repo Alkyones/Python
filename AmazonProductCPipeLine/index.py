@@ -35,6 +35,7 @@ def getScrapedDataFromLinks(links, url_base):
         soup = BeautifulSoup(page_source, "lxml")
         
         selectedCategory = soup.find("a", {"class": "nav-b"})
+        print(selectedCategory)
         # selectedCategoryBackup = soup.find("a", {"class": ""})
         if selectedCategory :
             title = selectedCategory["aria-label"]
@@ -89,13 +90,14 @@ if credentials is None:
 # DB connection
 DB = Database(credentials)
 
-url_base = "https://www.amazon.com"
+url_base = "https://www.amazon.co.uk"
 url = f"{url_base}/Best-Sellers/zgbs"
 
 options = webdriver.ChromeOptions()
 options.add_argument("--headless")
 driver = webdriver.Chrome()
 driver.get(url)
+time.sleep(20)
 
 page_source = driver.page_source
 soup = BeautifulSoup(page_source, "lxml")
