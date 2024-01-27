@@ -102,14 +102,14 @@ time.sleep(20)
 page_source = driver.page_source
 soup = BeautifulSoup(page_source, "lxml")
 
-containerData = soup.find_all("div", {"class": "a-size-base a-inline-block"})
-links = getLinksFromList(containerData)
+#Legacy
+# containerData = soup.find_all("div", {"class": "a-size-base a-inline-block"})
+# links = getLinksFromList(containerData)
 
-if not links:
-    print("No links found")
-    sys.exit()
-
-scrapedData = getScrapedDataFromLinks(links, url_base)
+# if not links:
+#     print("No links found")
+#     sys.exit()
+# scrapedData = getScrapedDataFromLinks(links, url_base)
 
 
 DB.disconnectDb()
