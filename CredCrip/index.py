@@ -1,5 +1,25 @@
 from PIL import Image
 import numpy as np
+import sys, os
+def getParams():
+    method = ''
+    key = 0
+    while method != 'encrypt' and method != 'decrypt':
+        method = input("Enter the method (encrypt/decrypt):")
+
+    while key < 1 or key > 25:
+        key = int(input("Enter the key (1-25):"))
+    return method, key
+
+def getImagePath(imagesInFolder):
+    imagesInFolder = os.listdir(path="./Images")
+    imageKeys = {}
+    if len(imagesInFolder) != 0:
+        imagesInFolder = [(i+1, image) for i, image in enumerate(imagesInFolder)]
+        for i, image in imagesInFolder:
+            imageKeys[i] = image
+    return imageKeys
+
 
 def encrypt_text(text, key):
     encrypted_text = ""
@@ -30,10 +50,9 @@ def encrypt_text_to_image(image_path, text, key):
         new_pixels.append(tuple(new_pixel))
     new_image = Image.new("RGB", image.size)
     new_image.putdata(new_pixels)
-    encrypted_image_path = "change"
-    new_image.save(encrypted_image_path)
-    print("Encryption successful. Encrypted image saved as", encrypted_image_path)
-    return encrypted_image_path
+    new_image.save(image_path)
+    print("Encryption successful. Encrypted image saved as", image_path)
+    return image_path
 
 
 def decrypt_text_from_image(encrypted_image_path, key):
@@ -45,15 +64,39 @@ def decrypt_text_from_image(encrypted_image_path, key):
     for i in range(0, len(binary_text), 8):
         decrypted_text += chr(int(binary_text[i:i+8], 2))
     decrypted_text = encrypt_text(decrypted_text, -key)
-    return decrypted_text
+    
+    with open("./data/output.txt", "w", encoding="utf-8") as f:
+        f.write(decrypted_text)
+    print("Decryption successful. Decrypted text saved as output.txt")
+    return True    
 
-# Example usage
-image_path = "change it"
-text_to_encrypt = "This is a secret message!"
-encryption_key = 3
 
-encrypted_image_path = encrypt_text_to_image(image_path, text_to_encrypt, encryption_key)
-print("Encrypted Image Path:", encrypted_image_path)
 
-decrypted_text = decrypt_text_from_image(encrypted_image_path, encryption_key)
-print("Decrypted Text:", decrypted_text)
+
+
+
+
+if __name__ == "__main__":
+    method, key = getParams()
+    imageKeys = getImagePath(os.listdir(path="./Images"))
+    if(len(imageKeys) == 0):
+        print("No images found in the Images folder.")
+        sys.exit()
+    else:
+        print("Images found in the Images folder:")
+        for i, image in imageKeys.items():
+            print(i, image)
+
+    image_path_key = 0
+    while image_path_key not in imageKeys.keys():
+        image_path_key = int(input(f"Enter the image number ({len(imageKeys)}):"))
+    image_path = "./Images/" + imageKeys[image_path_key]
+
+    with open("./data/data.txt", "r") as f:
+        secret_message = f.read()
+    
+    
+    if method == "encrypt":
+        encrypted_image_path = encrypt_text_to_image(image_path, secret_message, key)
+    elif method == "decrypt":
+        decrypted_text = decrypt_text_from_image(image_path, key)
