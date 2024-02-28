@@ -70,7 +70,7 @@ options.add_argument('--incognito')
 driver = webdriver.Edge()
 url = 'https://foodafrica-expo.com/exhibitors-list'
 driver.get(url)
-time.sleep(2)
+# time.sleep(2)
 
 try:
    
