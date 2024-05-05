@@ -3,7 +3,6 @@ import requests
 from selenium import webdriver
 import pandas as pd
 import time
-import undetected_chromedriver as uc
 from selenium.webdriver.common.by import By
 from selenium.webdriver.common.keys import Keys
 from selenium.webdriver import ActionChains
@@ -12,7 +11,6 @@ import pyclip
 data = pd.DataFrame(columns=['CompanyName', 'Country', 'Phone', 'Mail','Website','Years', 'StandNo', 'Cat'])
 
 options = webdriver.EdgeOptions()
-# options.add_argument('--user-data-dir=C:\\Users\\lifeo\\AppData\\Local\\Microsoft\\Edge\\User Data')
 options.add_argument('--incognito')
 
 driver = webdriver.Edge()

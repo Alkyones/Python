@@ -1,16 +1,12 @@
 from bs4 import BeautifulSoup
-import requests
 from selenium import webdriver
 import pandas as pd
 import time
-import undetected_chromedriver as uc
 from selenium.webdriver.common.by import By
-from selenium.webdriver.common.keys import Keys
-from selenium.webdriver import ActionChains
 
 data = pd.DataFrame(columns=['CompanyName', 'Country', 'Phone', 'Mail','Website','Years', 'StandNo', 'Cat'])
 options = webdriver.ChromeOptions()
-options.add_argument("--user-data-dir=C:\\Users\\lifeo\\AppData\\Local\\Google\\Chrome")
+options.add_argument("--user-data-dir=UserPath")
 driver = webdriver.Chrome(options=options)
 
 base= "https://liveconnect-events.ifema.es"

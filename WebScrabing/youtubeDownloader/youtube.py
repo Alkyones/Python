@@ -6,7 +6,7 @@ video_url = YouTube("https://www.youtube.com/watch?v=EGI-HL1WW7E&list=RDEGI-HL1W
 
 #get the audio from video file
 mp4_no_video = video_url.streams.filter(only_audio=True).first()
-outfile = mp4_no_video.download(output_path = "C:\\Users\\lifeo\\Downloads")
+outfile = mp4_no_video.download(output_path = "output_path")
 
 ##save the file
 

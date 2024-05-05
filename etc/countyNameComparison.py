@@ -7,7 +7,7 @@ with open("countrylist.txt") as file:
       countryName = countryName.replace("\n", '')
       countryDbList.append(countryName)
 
-foundFlags = os.listdir('C:\\Users\\lifeo\\Desktop\\Python\\frupro\\flags')
+foundFlags = os.listdir('your_flags_path')
 
 
 difference= set(countryDbList) ^ set(foundFlags)

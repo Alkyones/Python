@@ -9,7 +9,7 @@ import time
 
 
 options = webdriver.ChromeOptions()
-options.add_argument("--user-data-dir=C:\\Users\\lifeo\\AppData\\Local\\Google\\Chrome")
+options.add_argument("user_path")
 # options.add_argument("--headless")
 driver = webdriver.Chrome(options=options)
 

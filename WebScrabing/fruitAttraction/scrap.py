@@ -11,14 +11,13 @@ from selenium.webdriver import ActionChains
 from unidecode import unidecode
 
 options = webdriver.ChromeOptions()
-options.add_argument("--user-data-dir=C:\\Users\\lifeo\\AppData\\Local\\Google\\Chrome")
 driver = webdriver.Chrome(options=options)
 
 base= "https://liveconnect-events.ifema.es"
 
 
 
-dataLists = pd.read_csv("C:\\Users\\lifeo\\Desktop\\Python\\fruitAttractionLinks.csv", usecols =['Link'])
+dataLists = pd.read_csv("csv_path", usecols =['Link'])
 
 data = pd.DataFrame(columns=['CompanyName', 'Stand', 'Mail','Website','Location', 'Categories',"Activities", "Services", "Interests"])
 resultLinks = [x for x in dataLists['Link']]

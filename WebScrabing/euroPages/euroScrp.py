@@ -1,10 +1,8 @@
 from bs4 import BeautifulSoup
-import requests
 import re
 from selenium import webdriver
 import pandas as pd
 import time
-import undetected_chromedriver as uc
 from selenium.webdriver.common.by import By
 
 data = pd.DataFrame(columns=['CompanyName', 'Country', 'MainType', 'DescriptionShort','Description', 'Website', 'Phone', 'Facebook', 'Twitter', 'LinkedIn','Instagram'])

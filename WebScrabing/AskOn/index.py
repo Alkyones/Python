@@ -14,7 +14,7 @@ import json
 
 def chat():
     options = webdriver.ChromeOptions() 
-    options.add_argument('--user-data-dir=C:\\Users\\lifeo\\AppData\\Local\\Google\\Chrome')
+    options.add_argument('--user-data-dir=user_path')
     options.add_argument("--headless")
     driver = webdriver.Chrome(options=options)
    

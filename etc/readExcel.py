@@ -1,7 +1,7 @@
 import pandas as pd
 
-excel_file_path = 'C:\\Users\\lifeo\\Desktop\\Python\\etc\\Generic Partners.xlsx'
-excel_file_path2 = 'C:\\Users\\lifeo\\Desktop\\Python\\etc\\company-tradebase-match.xlsx'
+excel_file_path = 'excel_file'
+excel_file_path2 = "excel_file"
 
 
 # Read the Excel file into a DataFrame

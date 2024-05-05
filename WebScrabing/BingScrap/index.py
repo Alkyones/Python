@@ -1,10 +1,8 @@
 from selenium.webdriver.support import expected_conditions as EC
 from selenium.webdriver.common.by import By
 from selenium.webdriver.support.wait import WebDriverWait
-import undetected_chromedriver as uc
 from selenium import webdriver
 from bs4 import BeautifulSoup
-from selenium.webdriver.chrome.options import Options
 import time
 keyword = "when+turkey+established"
 # options = webdriver.ChromeOptions() 
@@ -33,7 +31,7 @@ keyword = "when+turkey+established"
 #     links += f"{item}\n"
 
 options = webdriver.ChromeOptions() 
-options.add_argument('--user-data-dir=C:\\Users\\lifeo\\AppData\\Local\\Google\\Chrome')
+options.add_argument('--user-data-dir=userPath')
 options.add_argument("--headless")
 driver = webdriver.Chrome(options=options)
 

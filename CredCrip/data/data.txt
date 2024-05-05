@@ -1,2 +1,0 @@
-secretKey: ["123","1234"]
-definitelySecret

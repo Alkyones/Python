@@ -37,7 +37,7 @@ exe = EXE(
     target_arch=None,
     codesign_identity=None,
     entitlements_file=None,
-    icon='c:\\Users\\lifeo\\Desktop\\Python\\PassHolder\\icon_fa.ico',
+    icon='icon_path',
 )
 coll = COLLECT(
     exe,
