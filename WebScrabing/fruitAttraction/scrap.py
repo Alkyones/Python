@@ -1,128 +1,96 @@
 from bs4 import BeautifulSoup
 import requests
-import pyperclip
 from selenium import webdriver
 import pandas as pd
 import time
-import undetected_chromedriver as uc
-from selenium.webdriver.common.by import By
-from selenium.webdriver.common.keys import Keys
-from selenium.webdriver import ActionChains
-from unidecode import unidecode
-
+import os 
+import json
 options = webdriver.ChromeOptions()
 driver = webdriver.Chrome(options=options)
 
-base= "https://liveconnect-events.ifema.es"
 
 
-
-dataLists = pd.read_csv("csv_path", usecols =['Link'])
-
-data = pd.DataFrame(columns=['CompanyName', 'Stand', 'Mail','Website','Location', 'Categories',"Activities", "Services", "Interests"])
-resultLinks = [x for x in dataLists['Link']]
+data = pd.DataFrame(columns=['CompanyName', 'Stand','Location', 'Mail','Website','Categories', 'Geographic region of operation',"Products and services offered", "Brochure link", "Company's activity", "Coexhibitor of" ])
+script_dir = os.path.dirname(__file__)
+data_csv_path = os.path.join(script_dir, 'data.csv')
+dataLists = pd.read_csv(data_csv_path, usecols =['link', 'email'])
+resultLinks = [{'link': row['link'], 'email': row['email']} for index, row in dataLists.iterrows()]
 failedLinks = []
 
-for link in resultLinks:
+for linkData in resultLinks:
     try:
-        url = link
+        url = linkData['link']
         driver.get(url)
 
-        time.sleep(2)
+        time.sleep(3)
         page_source = driver.page_source
         soup = BeautifulSoup(page_source, 'lxml')
-        time.sleep(2)
-        
-        companyName = ""
+        soup = json.loads(soup.find("pre").text)
+        companyName = "Not found"
         standNo = "Not found"
-        categories = []
-        location = ""
-        email = ""
-        if (soup.find("h1", {"id": "exhibitor-detail__title"})):
-            companyName = soup.find("h1", {"id": "exhibitor-detail__title"}).text
+        location = "N/A"
+        email = linkData['email']
+        website = "N/A"
+        categories = 'N/A'
+        groo = 'N/A'
+        paso = 'N/A'
+        bl = 'N/A'
+        ca = 'N/A'
+        coexh = ''
         
-        if(soup.find("div", {"class": "exhibitor-detail__stands"})):
-            div = soup.find("div", {"class": "exhibitor-detail__stands"})
-            standNo = div.find("span").text
-            standNo = standNo.replace("ó", "o")
+        if soup['name']:
+            if soup['name'] != '':
+                companyName = soup['name']
+        if soup['link'] and soup['link'] != '':
+            website = soup['link']
+        if soup['stands']:
+                if len(soup['stands']) > 0:
+                    standNo = f'Stand {soup['stands'][0]['name']} - {soup["stands"][0]["location"]}'
+        if soup['location']:
+            location = f'{soup['location']['address']} / {soup['location']['city']} / {soup['location']['region']} / {soup['location']['countryCode']}'
+
+        if soup['categories'] and len(soup['categories']) > 0:
+            categories = ', '.join(soup['categories'])
+        if soup['parentName'] and soup['parentName'] != '':
+            coexh = soup['parentName']
+
+        groo = ''.join(dynamicValue['value'] for dynamicField in soup['dynamicFields']
+                if dynamicField['name'] == "Geographic region of operation"
+                for dynamicValue in dynamicField.get('values', []))
+        paso = ''.join(dynamicValue['value'] for dynamicField in soup['dynamicFields']
+                if dynamicField['name'] == "Products and services offered"
+                for dynamicValue in dynamicField.get('values', []))
+        bl = ''.join(dynamicValue['value'] for dynamicField in soup['dynamicFields']
+                if dynamicField['name'] == "Brochure link"
+                for dynamicValue in dynamicField.get('values', []))
+        ca = ''.join(dynamicValue['value'] for dynamicField in soup['dynamicFields']
+                if dynamicField['name'] == "Company's activity"
+                for dynamicValue in dynamicField.get('values', []))
+        if groo == '': groo = 'N/A'
+        if paso == '': paso = 'N/A'
+        if bl == '': bl = 'N/A'
+        if ca == '': ca = 'N/A'
+
+        print('-----------------------')
+        print(companyName)
+        print(standNo)
+        print(location)
+        print(email)
+        print(website)
+        print(categories)
+        print(coexh)
+        print(groo)
+        print(paso)
+        print(bl)
+        print(ca)
+        print('------------------------')
         
-        if(soup.find_all("span", {"class": "lc-tag"})):
-            tags = soup.find_all("span", {"class": "lc-tag"})
-            tags.pop(0)
-            for tag in tags:
-                categories.append(tag.text)
-            if categories:
-                categories = ",".join(categories)
-            else:
-                categories = ""
-        if(soup.find("div", {"class": "location"})):
-            divloc = soup.find("div", {"class": "location"})
-            location = divloc.find("div").get_text()  
-        
-        if(soup.find("button", {"title": "Email"})):
-            element = driver.find_element(By.CSS_SELECTOR, 'button[type="button"][title="Email"].btn.btn-link.text-dark.px-1.py-0')
-            element.click()
-            email = pyperclip.paste()
-        
-        website = ""
-       
-        try:
-            website = driver.find_element(By.CSS_SELECTOR, 'a[target="_blank"][rel="noopener noreferrer"].lc-link.text-break')
-            website = website.get_attribute("href")
-        
-        except:
-            website = ""
-        
-        
-        activities, services, interests = [], [], [],     
-        if (soup.find("div", {"class": "show-dynamics"})):
-            dynamicDiv = soup.find("div", {"class": "show-dynamics"})
-            allDynamics = dynamicDiv.find_all("div", {"class": "show-dynamics__field"})
-            
-            for div in allDynamics:
-                title = div.find("p", {"class": "show-dynamics__title"}).text
-                
-                if title == "Actividad de su empresa":
-                    activitiesDiv = div.find("div", {"class": "gap-2"})
-                    activitiestext = activitiesDiv.find_all("p", {"class": "lc-tag"})
-                    for text in activitiestext:
-                        activities.append(text.text)
-                    if activities:
-                        activities = ",".join(activities)
-                        activities = unidecode(activities)
-                    
-                if title == "Productos y servicios que ofrece":
-                    servicesDiv = div.find("div", {"class": "gap-2"})
-                    servicestext = servicesDiv.find_all("p", {"class": "lc-tag"})
-                    for text in servicestext:
-                        services.append(text.text)
-                    if services:
-                        services = ",".join(services)
-                        services = unidecode(services)
-                if title == "Principales sectores de interés":
-                    interestsDiv = div.find("div", {"class": "gap-2"})
-                    intereststext = interestsDiv.find_all("p", {"class": "lc-tag"})
-                    for text in intereststext:
-                        interests.append(text.text)
-                    if interests:
-                        interests = ",".join(interests)
-                        interests = unidecode(interests) 
-        print(companyName, standNo, categories, location, email, website)
-        
-        if not activities:
-            activities = ""
-        if not services:
-            services = ""
-        if not interests:
-            interests = ""
-        print(activities, services, interests)
-        
-        data.loc[len(data.index)] = [companyName, standNo, email, website, location, categories, activities, services, interests]
+        data.loc[len(data.index)] = [companyName, standNo,location, email, website, categories, groo, paso, bl, ca, coexh]
     except Exception as e:
         print(e)
         print("Failed to find")
-        failedLinks.append(link)
-    
+        failedLinks.append(linkData['link'])
+    # break
         
-data.to_csv("fruitAttraction2023.csv", index=False)
+data.to_csv("fruitAttraction2023_EN.csv", index=False)
 print(failedLinks)
