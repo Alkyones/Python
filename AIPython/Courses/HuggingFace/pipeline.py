@@ -14,13 +14,23 @@ warnings.filterwarnings('ignore')
 
 # Force PyTorch backend to avoid TensorFlow compatibility issues
 classifier = pipeline(
-    "sentiment-analysis",
-    model="distilbert/distilbert-base-uncased-finetuned-sst-2-english",
-    revision="714eb0f",
-    framework="pt"  # Force PyTorch
+    "sentiment-analysis"
 )
-print(classifier("I've been waiting for you my whole life."))
-print(classifier("somewhere i go."))
+# Neutral/factual statements
+print(classifier("The weather is 20 degrees today."))
+print(classifier("Python is a programming language."))
+
+# Questions
+print(classifier("What time is it?"))
+print(classifier("How do you install packages?"))
+
+# Instructions/commands
+print(classifier("Please turn off the lights."))
+print(classifier("Save the file to the desktop."))
+
+# Descriptions
+print(classifier("The book has 300 pages."))
+print(classifier("The car is parked outside."))
 
 
 # text generation pipeline
