@@ -33,4 +33,31 @@ print(classifier("The book has 300 pages."))
 print(classifier("The car is parked outside."))
 
 
-# text generation pipeline
+# zero-shot classification with a smaller model
+classifier = pipeline(
+    "zero-shot-classification",
+    model="typeform/distilbert-base-uncased-mnli",  # Smaller, faster model
+    # device=0 if torch.cuda.is_available() else -1
+)
+
+# Zero-shot classification examples
+print(classifier("The weather is 20 degrees today.", candidate_labels=["weather", "temperature", "climate"]))
+print(classifier("The car is parked outside.", candidate_labels=["vehicle", "transportation", "parking"]))
+
+
+
+generator = pipeline("text-generation")
+generator("In this course, we will teach you how to")
+
+unmasker = pipeline("fill-mask")
+unmasker("This course will teach you all about <mask> models.", top_k=2)
+
+ner = pipeline("ner", grouped_entities=True)
+ner("My name is Sylvain and I work at Hugging Face in Brooklyn.")
+
+
+question_answerer = pipeline("question-answering")
+question_answerer(
+    question="Where do I work?",
+    context="My name is Sylvain and I work at Hugging Face in Brooklyn",
+)
