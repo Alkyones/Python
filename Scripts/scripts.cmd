@@ -29,5 +29,5 @@ IF "%command%"=="list" (
 
   :run_script
   REM Run the Python script with the collected arguments
-  py C:\Users\lifeo\Desktop\Codes\Python\Scripts\%command%.py !args!
+  python C:\Users\lifeo\Desktop\Codes\Python\Scripts\%command%.py !args!
 )
